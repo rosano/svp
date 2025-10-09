@@ -3,7 +3,7 @@ import 'normalize.css';
 import favicon from '$lib/assets/favicon.svg';
 import Toast from './toast.svelte';
 
-import { page, updated } from '$app/state';
+import { page } from '$app/state';
 let { children, data } = $props();
 </script>
 

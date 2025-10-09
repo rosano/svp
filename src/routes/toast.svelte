@@ -25,12 +25,12 @@ toast {
 	top: 0;
 	right: 0;
 	
-	display: flex;
-	gap: var(--spacing);
-
 	background: #8000ff;
 	color: white;
 	font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
+
+	display: flex;
+	gap: var(--spacing);
 
 	/* DisableTextSelection */
 	-webkit-touch-callout: none; /* iOS Safari */
