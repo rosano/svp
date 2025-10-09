@@ -4,7 +4,7 @@ import { updated } from '$app/state';
 let _updateVisible = true;
 </script>
 
-{#if _updateVisible}
+{#if updated.current && _updateVisible}
 	<toast onclick={ () => _updateVisible = false }>
 		<p>new update available</p>
 		<a href="#" onclick={ () => location.reload() }>Reload</a>
