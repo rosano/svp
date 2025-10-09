@@ -1,6 +1,7 @@
 <script>
 import 'normalize.css';
 import favicon from '$lib/assets/favicon.svg';
+import Toast from './toast.svelte';
 
 import { page, updated } from '$app/state';
 let { children, data } = $props();
@@ -30,24 +31,4 @@ let { children, data } = $props();
 	</div>
 {/if}
 
-<style>
-.toast {
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100%;
-	padding: 1rem;
-	display: flex;
-	justify-content: center;
-	gap: 1rem;
-}
-
-.toast p {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-	background: var(--bg-2);
-	padding: 0.5rem 0.5rem 0.5rem 1rem;
-	border-radius: 4px;
-}
-</style>
+<Toast></Toast>
