@@ -22,10 +22,12 @@ const ASSETS = [
 ];
 
 const mod = {
+
+	debugOn: false,
 	
 	precache: async () => (await caches.open(CACHE)).addAll(ASSETS),
 	
-	deleteCache: async () => Promise.all((await caches.keys()).filter(e => e !== CACHE).map(caches.delete)),
+	deleteCache: async () => Promise.all((await caches.keys()).filter(e => e !== CACHE).map(e => caches.delete(e))), // can't pass directly to map
 
 	async respond (event) {
 		const url = new URL(event.request.url);
@@ -42,13 +44,11 @@ const mod = {
 			response = await fetch(event.request);
 
 			// sometimes fetch doesn't return a `Response`
-			if (!(response instanceof Response)) {
+			if (!(response instanceof Response))
 				throw new Error('invalid response from fetch');
-			}
 
-			if (response.status === 200) {
+			if (response.status === 200)
 				cache.put(event.request, response.clone());
-			}
 
 			return response;
 		} catch (err) {
@@ -69,7 +69,38 @@ const mod = {
 		if (event.request.method !== 'GET')
 			return;
 
+		if (event.request.url.match('service-worker.js'))
+			return;
+
+		const url = new URL(event.request.url);
+		
+		// storage account requests shouldn't be cached
+		// not sure of the best way, but this is a guess
+		if (event.request.mode === 'cors' && !ASSETS.includes(url.pathname))
+			return mod.debugOn && console.log('skip cors', event.request.url);
+
 		event.respondWith(mod.respond(event));
+	},
+
+	async message (event) {
+		const signature = event.data;
+
+		const api = {
+
+			skipWaiting: () => self.skipWaiting(),
+
+		};
+
+		if (!Object.keys(api).includes(signature))
+			return;
+
+		await api[signature]()
+
+		// return event.source.postMessage({
+		// 	signature,
+		// 	OLSKMessageArguments: event.data.OLSKMessageArguments,
+		// 	OLSKMessageResponse: await api[signature](...[].concat(event.data.OLSKMessageArguments || [])),
+		// });
 	},
 
 };
@@ -79,3 +110,5 @@ self.addEventListener('install', mod.didInstall);
 self.addEventListener('activate', mod.didActivate);
 
 self.addEventListener('fetch', mod.didFetch);
+
+self.addEventListener('message', mod.message);

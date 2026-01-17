@@ -1,22 +1,76 @@
 <script>
-import { updated } from '$app/state';
+const mod = {
 
-let _updateVisible = true;
+	isVisible: false,
+	debugOn: false,
+
+	// control
+
+	skipWaiting () {
+		mod.nextWorker.postMessage('skipWaiting');
+	},
+
+	// message
+
+	updatefound (event) {
+		mod.debugOn && console.log('updatefound', event);
+
+		mod.nextWorker = mod.registration.installing;
+
+		mod.nextWorker.addEventListener('statechange', mod.statechange);
+	},
+
+	statechange (event) {
+		mod.debugOn && console.log('statechange', mod.nextWorker.state, event, navigator.serviceWorker.controller);
+
+		if (mod.nextWorker.state !== 'installed')
+			return;
+
+		if (!navigator.serviceWorker.controller)
+			return;
+
+		mod.isVisible = true;
+	},
+
+	controllerchange (event) {
+		mod.debugOn && console.log('controllerchange', event);
+
+		window.location.reload();
+	},
+
+	// lifecycle
+
+	async didMount() {
+		if (!navigator.serviceWorker)
+			return mod.debugOn && console.info('Service worker not available');
+
+		mod.registration = await navigator.serviceWorker.register('/service-worker.js');
+		
+		mod.debugOn && console.info('Service Worker Registered');
+
+		mod.registration.addEventListener('updatefound', mod.updatefound);
+
+		navigator.serviceWorker.addEventListener('controllerchange', mod.controllerchange);
+	},
+
+};
+
+import { onMount } from 'svelte';
+onMount(mod.didMount);
 </script>
 
-{#if updated.current && _updateVisible}
-	<toast onclick={ () => _updateVisible = false }>
-		<p>new update available</p>
-		<a href="#" onclick={ () => location.reload() }>Reload</a>
+{#if mod.isVisible}
+	<toast>
+		<button class="close" onclick={ () => mod.isVisible = false }>new update available</button>
+		<button onclick={ mod.skipWaiting }>Reload</button>
 	</toast>
 {/if}
 
-<style type="text/css">
+<style>
 toast {
 	--spacing: 10px;
 	--corner: 3px;
 
-	padding: var(--spacing);
 	border: 1px solid #b265ff;
 	border-radius: var(--corner);
 	
@@ -30,24 +84,19 @@ toast {
 	font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
 
 	display: flex;
-	gap: var(--spacing);
 
-	/* DisableTextSelection */
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+	button {
+		padding: var(--spacing);
+		
+		color: white;
 
-	p {
-		margin: 0;
-		opacity: 0.8;
-	}
+		&.close {
+			opacity: 0.8;
+		}
 
-	a {
-		color: inherit;
-		text-decoration: none;
+		appearance: none;
+		border: 0;
+		background: none;
 	}
 }
 </style>
