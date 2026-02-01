@@ -11,7 +11,7 @@
 		"test:e2e": "playwright test",
 		"test:unit": "vitest"
 	},
-	"devDependencies": {
+	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.9",
 		"@playwright/test": "^1.49.1",
 		"@sveltejs/kit": "^2.49.5",
