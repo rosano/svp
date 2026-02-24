@@ -11,6 +11,7 @@ https://svp.github.rosano.ca
 | [SvelteKit](https://svelte.dev/docs/kit) | framework, UI components, routing and redirects, navigation without HTTP requests, `vite`-fast builds, `service-worker.js` automatic registration |
 | + [adapter-static](https://svelte.dev/docs/kit/adapter-static) | build as static site |
 | + [mdsvex](https://mdsvex.pngwn.io/docs) | markdown content in `.md` files |
+| + [svelte-pathfinder](https://github.com/sveltetools/svelte-pathfinder) | hash based routing on top of Svelte's file-based router |
 | [Vitest](https://vitest.dev) | logic or unit tests in `tests.js` files |
 | [Playwright](https://playwright.dev) | interface tests in `tests-ui.js` files |
 
